@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Media;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -108,7 +109,7 @@ namespace Honor9HarmonyDownloader
             warning.AutoSize = true;
             warning.ForeColor = Color.DarkRed;
             warning.Text = "Требуются USERLOCK и FBLOCK: UNLOCKED. Данные телефона будут удалены. " +
-                           "Bootloader после установки не блокировать.";
+                           "Bootloader после установки не блокировать. Переходы в Fastboot/TWRP могут потребовать кнопок телефона.";
             warning.Margin = new Padding(0, 0, 0, 12);
             root.Controls.Add(warning, 0, 1);
 
@@ -814,8 +815,14 @@ namespace Honor9HarmonyDownloader
             if (IsDisposed) return;
             BeginInvoke((MethodInvoker)delegate
             {
+                bool manual = line.IndexOf("MANUAL ACTION REQUIRED", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (manual)
+                {
+                    _statusLabel.Text = "Требуется действие на телефоне — смотрите журнал";
+                    SystemSounds.Exclamation.Play();
+                }
                 _log.SelectionStart = _log.TextLength;
-                _log.SelectionColor = error ? Color.DarkRed : Color.Black;
+                _log.SelectionColor = error ? Color.DarkRed : manual ? Color.DarkOrange : Color.Black;
                 _log.AppendText(line + Environment.NewLine);
                 _log.SelectionColor = Color.Black;
                 _log.ScrollToCaret();

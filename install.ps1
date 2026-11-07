@@ -34,23 +34,35 @@ function Run-Capture([string]$Program, [string[]]$Arguments, [switch]$AllowFailu
     return $text
 }
 
-function Wait-Fastboot([int]$Seconds = 120) {
+function Wait-Fastboot([int]$Seconds = 300) {
     $until = (Get-Date).AddSeconds($Seconds)
+    $manualAt = (Get-Date).AddSeconds(15)
+    $warned = $false
     do {
         $rows = Run-Capture $Fastboot @("devices") -AllowFailure
         if (($rows -split "`n" | Where-Object { $_ -match "^\S+\s+fastboot" }).Count -eq 1) { return }
+        if (-not $warned -and (Get-Date) -ge $manualAt) {
+            Log "MANUAL ACTION REQUIRED: enter Fastboot now. Power the phone off, hold Volume Down, and connect USB."
+            $warned = $true
+        }
         Start-Sleep -Seconds 2
     } while ((Get-Date) -lt $until)
     throw "Fastboot device did not appear"
 }
 
-function Wait-Recovery([int]$Seconds = 150) {
+function Wait-Recovery([int]$Seconds = 300) {
     $until = (Get-Date).AddSeconds($Seconds)
+    $manualAt = (Get-Date).AddSeconds(20)
+    $warned = $false
     do {
         $state = Run-Capture $Adb @("get-state") -AllowFailure
         if ($state.Trim() -eq "device") {
             $twrp = Run-Capture $Adb @("shell", "getprop", "ro.twrp.version") -AllowFailure
             if ($twrp.Trim()) { return }
+        }
+        if (-not $warned -and (Get-Date) -ge $manualAt) {
+            Log "MANUAL ACTION REQUIRED: disconnect USB; hold Power until the phone turns off; hold Power + Volume Up; after the Honor logo release Power but keep Volume Up held; reconnect USB when TWRP appears."
+            $warned = $true
         }
         Start-Sleep -Seconds 2
     } while ((Get-Date) -lt $until)
@@ -80,7 +92,7 @@ try {
         if (-not (Test-Path -LiteralPath $required)) { throw "Missing tool: $required" }
     }
 
-    Wait-Fastboot 20
+    Wait-Fastboot 300
     $deviceRows = Run-Capture $Fastboot @("devices")
     $devices = @($deviceRows -split "`n" | Where-Object { $_ -match "^\S+\s+fastboot" })
     if ($devices.Count -ne 1) { throw "Connect exactly one phone in Fastboot mode" }

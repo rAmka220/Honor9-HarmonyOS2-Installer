@@ -72,6 +72,16 @@ FBLOCK, and the installed system version. It does not flash or erase anything.
 5. Do not disconnect USB, close the EXE, or touch TWRP controls.
 6. Watch the integrated log and wait for **DONE**.
 
+Honor 9 does not always switch modes programmatically. If the EXE sounds an
+alert and displays `MANUAL ACTION REQUIRED`:
+
+- for **Fastboot**, power off, hold Volume Down, and connect USB;
+- for **TWRP**, disconnect USB first, hold Power until the phone turns off,
+  then hold Power + Volume Up together; release Power at the Honor logo but
+  keep Volume Up held until TWRP appears; reconnect USB after TWRP starts.
+
+The EXE keeps waiting for up to five minutes; do not restart the installer.
+
 The process normally takes 30–60 minutes.
 
 ## 7. After installation

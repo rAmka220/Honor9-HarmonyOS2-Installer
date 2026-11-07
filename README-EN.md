@@ -134,6 +134,11 @@ Do not press phone buttons, select anything in TWRP, or close the window. The
 screen may switch between Fastboot, TWRP, and the Honor logo several times.
 This is expected.
 
+If the automatic TWRP transition fails and the EXE displays
+`MANUAL ACTION REQUIRED`, disconnect USB, hold Power until the phone turns off,
+hold Power + Volume Up, release Power at the Honor logo, and keep Volume Up
+held until TWRP appears. Reconnect USB afterward; the EXE keeps waiting.
+
 ## 7. Automated installation stages
 
 Installation usually takes 30–60 minutes:
