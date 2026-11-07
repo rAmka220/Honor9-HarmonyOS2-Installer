@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [long]$ReleaseId,
     [Parameter(Mandatory = $true)]
-    [string[]]$Paths
+    [string[]]$Paths,
+    [switch]$Clobber
 )
 
 $ErrorActionPreference = "Stop"
@@ -71,7 +72,9 @@ try {
     $client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json")
 
     $assetsUrl = "https://api.github.com/repos/rAmka220/Honor9-HarmonyOS2-Installer/releases/$ReleaseId/assets?per_page=100"
-    $existing = @(ConvertFrom-Json $client.GetStringAsync($assetsUrl).Result)
+    $parsedAssets = ConvertFrom-Json $client.GetStringAsync($assetsUrl).Result
+    $existing = @()
+    foreach ($parsedAsset in $parsedAssets) { $existing += $parsedAsset }
     foreach ($path in $Paths) {
         $file = Get-Item -LiteralPath $path
         $found = $existing | Where-Object { $_.name -eq $file.Name } | Select-Object -First 1
@@ -80,7 +83,16 @@ try {
                 Write-Host "SKIP $($file.Name) already uploaded"
                 continue
             }
-            throw "Asset exists with a different size: $($file.Name)"
+            if (-not $Clobber) {
+                throw "Asset exists with a different size: $($file.Name)"
+            }
+            $deleteUrl = "https://api.github.com/repos/rAmka220/Honor9-HarmonyOS2-Installer/releases/assets/$($found.id)"
+            $deleteResponse = $client.DeleteAsync($deleteUrl).Result
+            if (-not $deleteResponse.IsSuccessStatusCode) {
+                throw "Unable to replace asset $($file.Name): HTTP $([int]$deleteResponse.StatusCode)"
+            }
+            $existing = @($existing | Where-Object { $_.id -ne $found.id })
+            Write-Host "DELETE old $($file.Name) id=$($found.id)" -ForegroundColor Yellow
         }
 
         Write-Host "UPLOAD $($file.Name) ($($file.Length) bytes)" -ForegroundColor Cyan
