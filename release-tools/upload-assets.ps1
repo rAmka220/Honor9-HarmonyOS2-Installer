@@ -79,7 +79,10 @@ try {
         $file = Get-Item -LiteralPath $path
         $found = $existing | Where-Object { $_.name -eq $file.Name } | Select-Object -First 1
         if ($found) {
-            if ([long]$found.size -eq $file.Length -and $found.state -eq "uploaded") {
+            $localDigest = "sha256:$((Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant())"
+            if ([long]$found.size -eq $file.Length -and
+                $found.state -eq "uploaded" -and
+                $found.digest -eq $localDigest) {
                 Write-Host "SKIP $($file.Name) already uploaded"
                 continue
             }
