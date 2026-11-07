@@ -1,0 +1,9 @@
+# Large release files are published as GitHub Release assets, not Git objects.
+payload.7z
+payload.7z.part*
+Honor9-HarmonyOS2-Installer-base-*.zip
+
+# Per-device private data and runtime output.
+backups/
+logs/
+*.tmp

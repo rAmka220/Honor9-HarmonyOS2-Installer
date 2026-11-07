@@ -1,0 +1,11 @@
+Android Platform Tools are distributed under the licenses in tools/NOTICE-Android.txt.
+
+7-Zip is Copyright (C) 1999-2026 Igor Pavlov and is distributed under the
+licenses reproduced in tools/License-7-Zip.txt.
+
+TWRP-3.2.1.0_Mod_9.img is a device-specific modified recovery image. Its
+provenance and corresponding source archive must be established before public
+redistribution. It is included here only as a local installation dependency.
+
+Huawei/Honor firmware images remain the property of their respective rights
+holders. This package is not affiliated with or endorsed by Huawei or Honor.

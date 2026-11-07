@@ -1,0 +1,11 @@
+* text=auto
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.md text eol=lf
+*.txt text eol=crlf
+*.sha256 text eol=lf
+*.exe binary
+*.dll binary
+*.img binary
+*.7z binary
+*.zip binary
