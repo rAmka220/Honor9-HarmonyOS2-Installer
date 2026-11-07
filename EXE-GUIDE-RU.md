@@ -24,7 +24,8 @@ PowerShell не требуется.
 ## 2. Скачивание EXE
 
 1. Откройте актуальный раздел [Releases](../../releases/latest).
-2. Скачайте `Honor9-HarmonyOS2-Downloader.exe`.
+2. Скачайте
+   [`Honor9-HarmonyOS2-Downloader.exe`](../../releases/latest/download/Honor9-HarmonyOS2-Downloader.exe).
 3. Проверьте SHA-256 по `SHA256SUMS.txt` Release.
 4. Запустите EXE. Если Windows SmartScreen показывает предупреждение, проверьте
    имя файла и SHA-256, затем выберите **Подробнее → Выполнить в любом случае**.

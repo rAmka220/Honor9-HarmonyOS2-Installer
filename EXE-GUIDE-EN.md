@@ -24,7 +24,8 @@ Internal storage will be erased completely. The microSD card is not formatted.
 ## 2. Downloading the EXE
 
 1. Open the latest [Release](../../releases/latest).
-2. Download `Honor9-HarmonyOS2-Downloader.exe`.
+2. Download
+   [`Honor9-HarmonyOS2-Downloader.exe`](../../releases/latest/download/Honor9-HarmonyOS2-Downloader.exe).
 3. Verify its SHA-256 against the Release `SHA256SUMS.txt`.
 4. Run the EXE. If SmartScreen warns, verify the file and checksum before
    selecting **More info → Run anyway**.

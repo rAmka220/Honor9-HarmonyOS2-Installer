@@ -43,7 +43,7 @@ Huawei P10, Honor 9 Lite, Honor 9X и другие модели не подде�
 Рекомендуемый способ — единая Windows-программа из раздела
 **[Releases](../../releases/latest)**:
 
-`Honor9-HarmonyOS2-Downloader.exe`
+[`Honor9-HarmonyOS2-Downloader.exe`](../../releases/latest/download/Honor9-HarmonyOS2-Downloader.exe)
 
 Она выполняет весь процесс в одном окне:
 
