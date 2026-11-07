@@ -79,7 +79,7 @@ try {
         $file = Get-Item -LiteralPath $path
         $found = $existing | Where-Object { $_.name -eq $file.Name } | Select-Object -First 1
         if ($found) {
-            if ([long]$found.size -eq $file.Length) {
+            if ([long]$found.size -eq $file.Length -and $found.state -eq "uploaded") {
                 Write-Host "SKIP $($file.Name) already uploaded"
                 continue
             }
