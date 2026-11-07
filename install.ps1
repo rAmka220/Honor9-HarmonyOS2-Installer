@@ -89,12 +89,19 @@ try {
 
     $bootInfo = Run-Capture $Fastboot @("oem", "get-bootinfo")
     if ($bootInfo -notmatch "(?i)unlocked") { throw "Bootloader is not unlocked" }
+    $fblockInfo = Run-Capture $Fastboot @("oem", "backdoor", "info") -AllowFailure
+    if ($fblockInfo -match "(?im)FB\s*LockState\s*:\s*LOCKED") {
+        throw "FBLOCK is locked. Disable FBLOCK before installation"
+    }
+    if ($fblockInfo -notmatch "(?im)FB\s*LockState\s*:\s*UNLOCKED") {
+        throw "Unable to verify FBLOCK state. Installation requires FB LockState: UNLOCKED"
+    }
     $build = Run-Capture $Fastboot @("oem", "get-build-number") -AllowFailure
     if ($build -notmatch "(9\.(0\.1|1\.0)|102\.0\.0)") {
         throw "EMUI 9.x is required before this installer. Reported build: $build"
     }
 
-    Log "Device accepted: $model, serial $serial, bootloader unlocked"
+    Log "Device accepted: $model, serial $serial, USERLOCK and FBLOCK unlocked"
     if ($CheckOnly) {
         Log "CHECK PASSED. No partitions were changed."
         exit 0
