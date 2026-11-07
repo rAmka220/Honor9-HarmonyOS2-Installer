@@ -2,6 +2,8 @@
 payload.7z
 payload.7z.part*
 Honor9-HarmonyOS2-Installer-base-*.zip
+PREAS-signed-*.img
+PREAS-signed-*.img.sha256
 
 # Per-device private data and runtime output.
 backups/

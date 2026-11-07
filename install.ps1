@@ -1,4 +1,8 @@
-param([switch]$CheckOnly)
+param(
+    [switch]$CheckOnly,
+    [ValidateSet("Signed", "Unsigned")]
+    [string]$PreasMode
+)
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2
@@ -54,7 +58,7 @@ function Wait-Recovery([int]$Seconds = 150) {
 }
 
 function Flash([string]$Partition, [string]$File) {
-    $path = Join-Path $PayloadDir $File
+    $path = if ([IO.Path]::IsPathRooted($File)) { $File } else { Join-Path $PayloadDir $File }
     Log "Flashing $Partition"
     [void](Run-Capture $Fastboot @("flash", $Partition, $path))
 }
@@ -119,6 +123,46 @@ try {
     $actualArchiveHash = (Get-FileHash -LiteralPath $PayloadArchive -Algorithm SHA256).Hash
     if ($actualArchiveHash -ne $expectedArchiveHash) { throw "payload.7z is damaged" }
 
+    $SignedPreas = Join-Path $Root "PREAS-signed-Huawei-140-sparse.img"
+    if (-not $PreasMode) {
+        Write-Host ""
+        Write-Host "Choose the PREAS image:" -ForegroundColor Cyan
+        if (Test-Path -LiteralPath $SignedPreas) {
+            Write-Host "  1 - Huawei-signed Chinese PREAS from HarmonyOS 2.0.0.140"
+            Write-Host "      Experimental with 2.0.0.150; not yet tested on a real phone."
+        } else {
+            Write-Host "  1 - Signed PREAS is not downloaded" -ForegroundColor DarkGray
+        }
+        Write-Host "  2 - Modified unsigned /china PREAS used by installer v1.0.0"
+        Write-Host "      Tested on STF-AL10; AVB algorithm NONE."
+        Write-Host "A signed PREAS alone does NOT make bootloader relock safe." -ForegroundColor Yellow
+        do {
+            $preasChoice = Read-Host "Enter 1 or 2"
+            if ($preasChoice -eq "1" -and -not (Test-Path -LiteralPath $SignedPreas)) {
+                Write-Host "Signed PREAS is not present. Download it with the EXE installer." -ForegroundColor Red
+                $preasChoice = ""
+            }
+        } while ($preasChoice -notin @("1", "2"))
+        $PreasMode = if ($preasChoice -eq "1") { "Signed" } else { "Unsigned" }
+    }
+    if ($PreasMode -eq "Signed") {
+        if (-not (Test-Path -LiteralPath $SignedPreas)) {
+            throw "Signed PREAS is missing. Download it with Honor9-HarmonyOS2-Downloader.exe"
+        }
+        $signedHashFile = "$SignedPreas.sha256"
+        if (-not (Test-Path -LiteralPath $signedHashFile)) { throw "Signed PREAS hash file is missing" }
+        $expectedSignedHash = ((Get-Content -LiteralPath $signedHashFile -Raw).Trim() -split "\s+")[0]
+        Log "Verifying signed PREAS"
+        if ((Get-FileHash -LiteralPath $SignedPreas -Algorithm SHA256).Hash -ne $expectedSignedHash) {
+            throw "Signed PREAS SHA-256 mismatch"
+        }
+        $PreasFile = $SignedPreas
+        Log "PREAS selected: Huawei-signed Chinese image from HarmonyOS 2.0.0.140 (experimental)"
+    } else {
+        $PreasFile = "PREAS-unsigned-fixed-sparse.img"
+        Log "PREAS selected: modified unsigned /china image (tested on STF-AL10)"
+    }
+
     Write-Host ""
     Write-Host "THIS WILL ERASE INTERNAL STORAGE. microSD will not be touched." -ForegroundColor Yellow
     Write-Host "The bootloader must stay unlocked after installation." -ForegroundColor Yellow
@@ -130,6 +174,15 @@ try {
     Log "Extracting payload to $PayloadDir"
     [void](Run-Capture $SevenZip @("x", "-y", "-o$PayloadDir", $PayloadArchive))
     Verify-Payload $PayloadDir
+
+    if ($PreasMode -eq "Unsigned" -and -not (Test-Path -LiteralPath (Join-Path $PayloadDir $PreasFile))) {
+        $legacyPreas = "PREAS-fixed-sparse.img"
+        if (Test-Path -LiteralPath (Join-Path $PayloadDir $legacyPreas)) {
+            $PreasFile = $legacyPreas
+        } else {
+            throw "Unsigned PREAS is missing from payload"
+        }
+    }
 
     Log "Starting temporary TWRP"
     [void](Run-Capture $Fastboot @("flash", "recovery_ramdisk", (Join-Path $Tools "TWRP-3.2.1.0_Mod_9.img")))
@@ -180,7 +233,7 @@ try {
         @("hisee_img", "HISEE_IMG.img"), @("hisee_fs", "HISEE_FS.img"),
         @("modemnvm_update", "MODEMNVM_UPDATE.img"),
         @("version", "VERSION.img"), @("preload", "PRELOAD.img"),
-        @("preas", "PREAS-fixed-sparse.img")
+        @("preas", $PreasFile)
     )
     foreach ($entry in $firmware) { Flash $entry[0] $entry[1] }
     Log "Flashing device-specific patched OEMINFO"

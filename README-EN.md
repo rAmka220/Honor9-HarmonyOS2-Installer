@@ -2,6 +2,8 @@
 
 [Русская версия](README-RU.md)
 
+Dedicated EXE guide: [`EXE-GUIDE-EN.md`](EXE-GUIDE-EN.md).
+
 Automated offline installer for Windows. No internet connection is required
 during installation.
 
@@ -47,7 +49,19 @@ If Windows has not previously detected a Huawei/Honor phone in Fastboot:
 2. Close HiSuite completely after installation, including its tray icon.
 3. Do not run other ADB/Fastboot or flashing programs at the same time.
 
-### Installer folder
+### EXE installer (recommended)
+
+1. Download `Honor9-HarmonyOS2-Downloader.exe` from the latest GitHub Release.
+2. Run it and select a folder on an internal drive, such as
+   `C:\Honor9Harmony`.
+3. Select a PREAS variant and click **“1. Download and prepare”**.
+4. The program supports resuming and verifies every GitHub Release file by
+   SHA-256 automatically.
+
+Phone checking and flashing are performed in the same window; no CMD files
+need to be started manually.
+
+### Installer folder for manual setup
 
 1. Copy the **entire** installer folder to an internal computer drive.
 2. Use a short path containing no non-ASCII characters, for example:
@@ -61,11 +75,8 @@ If Windows has not previously detected a Huawei/Honor phone in Fastboot:
    - `payload-manifest.sha256`;
    - the `tools` folder.
 
-The complete package is approximately 3.22 GiB. SHA-256 of `payload.7z`:
-
-`e4299e29d6e481f6c9a67fc4e1cb701966a8c84c231a62aef4860406d341f9e6`
-
-The installer verifies this hash and every extracted image automatically.
+Exact sizes and SHA-256 values are published with every Release. The EXE checks
+each GitHub asset digest, the assembled `payload.7z`, and the selected PREAS.
 
 ## 4. Entering Fastboot
 
@@ -82,7 +93,8 @@ need to be disabled again. Do not continue if either state is `LOCKED`.
 ## 5. Mandatory pre-installation check
 
 1. Leave the phone on the Fastboot screen.
-2. Double-click `check-phone.cmd`.
+2. Click **“2. Check phone”** in the EXE. For manual setup, double-click
+   `check-phone.cmd`.
 3. Do not close the window before it reports a result.
 
 Successful result:
@@ -104,14 +116,19 @@ editing the script or running Fastboot commands manually.
 
 1. Close HiSuite, old ADB/Fastboot windows, and other flashing software.
 2. Leave the phone in Fastboot.
-3. Double-click `install.cmd`.
+3. Click **“3. Flash phone”** in the EXE. For manual setup, double-click
+   `install.cmd`.
 4. The installer checks the phone and package integrity again.
-5. Read the data-erasure warning.
-6. Enter this exact confirmation phrase:
+5. Select a PREAS variant:
+   - Huawei-signed Chinese PREAS from HarmonyOS 2.0.0.140 — experimental with
+     2.0.0.150;
+   - modified unsigned `/china` PREAS — tested on STF-AL10.
+6. Read the data-erasure warning.
+7. Enter this exact confirmation phrase:
 
    `STF-HARMONY-ERASE`
 
-7. Press Enter and do not disconnect the cable.
+8. Press Enter and do not disconnect the cable.
 
 Do not press phone buttons, select anything in TWRP, or close the window. The
 screen may switch between Fastboot, TWRP, and the Honor logo several times.
@@ -158,6 +175,17 @@ The installer intentionally does **not** flash:
 
 The bootloader remains unlocked.
 
+### PREAS selection
+
+| Variant | AVB | Status |
+|---|---|---|
+| Signed Chinese PREAS from official HarmonyOS 2.0.0.140 | `SHA256_RSA2048`, Huawei key | Experimental with the 2.0.0.150 system |
+| Modified minimal PREAS containing `/china` | `NONE` | Tested on STF-AL10 |
+
+The EXE downloads the separate signed image only when the first option is
+selected. Its signature only verifies PREAS with a Huawei key and **does not
+make bootloader relocking safe**.
+
 ## 9. First boot
 
 After the `DONE` message:
@@ -172,12 +200,12 @@ After the `DONE` message:
 After booting:
 
 - never relock the bootloader;
-- do not install OTA updates over the modified PREAS;
+- do not install OTA updates over this mixed installation;
 - do not use a `dload` package from another model;
 - store the `backups` folder safely.
 
-PREAS is modified and uses AVB algorithm `NONE`. Relocking can make the phone
-unbootable.
+The unsigned option uses AVB algorithm `NONE`; the signed option comes from
+release 2.0.0.140. Do not relock the bootloader with either option.
 
 ## 10. Backups
 
