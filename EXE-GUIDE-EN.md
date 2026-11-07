@@ -36,16 +36,15 @@ The program is portable and uses the .NET Framework included with Windows.
 
 1. Select a short path on an internal drive, such as `C:\Honor9Harmony`.
 2. Wait for the automatic Release check or click **Проверить GitHub**.
-3. Select PREAS:
-   - **unsigned** — modified minimal `/china`, tested on STF-AL10;
-   - **Huawei-signed** — official Chinese PREAS from HarmonyOS 2.0.0.140,
-     experimental with the 2.0.0.150 system.
+3. Keep the **unsigned** modified minimal `/china` PREAS selected. It is tested
+   on STF-AL10. In `v1.1.0`, signed mode is disabled because no exact verified
+   Chinese signed image has been found.
 4. Click **1. Скачать и подготовить**.
 5. Wait for **КОМПЛЕКТ ГОТОВ**.
 
 Downloads can resume after interruption. The application verifies every
 Release asset, safely extracts the base ZIP, and verifies the assembled
-`payload.7z`. Only the separate signed PREAS is added when selected.
+`payload.7z`.
 
 ## 4. Connecting the phone
 
@@ -92,7 +91,7 @@ The process normally takes 30–60 minutes.
 - preserve the `backups` and `logs` folders;
 - never share `backups`, because it contains device-unique data.
 
-A signed PREAS proves only that Huawei signed that image. It does not make
-relocking safe and remains experimental with the 2.0.0.150 system.
+See [`SIGNED-PREAS-STATUS.md`](SIGNED-PREAS-STATUS.md) for the signed-image
+research status. A future signed image still would not make relocking safe.
 
 Use this package at your own risk.

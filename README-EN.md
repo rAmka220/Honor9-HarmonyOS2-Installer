@@ -54,7 +54,9 @@ If Windows has not previously detected a Huawei/Honor phone in Fastboot:
 1. Download `Honor9-HarmonyOS2-Downloader.exe` from the latest GitHub Release.
 2. Run it and select a folder on an internal drive, such as
    `C:\Honor9Harmony`.
-3. Select a PREAS variant and click **“1. Download and prepare”**.
+3. In `v1.1.0`, keep the available unsigned PREAS selected and click
+   **“1. Download and prepare”**. Signed remains disabled until an exact
+   verified Chinese `/china` image is available.
 4. The program supports resuming and verifies every GitHub Release file by
    SHA-256 automatically.
 
@@ -119,10 +121,8 @@ editing the script or running Fastboot commands manually.
 3. Click **“3. Flash phone”** in the EXE. For manual setup, double-click
    `install.cmd`.
 4. The installer checks the phone and package integrity again.
-5. Select a PREAS variant:
-   - Huawei-signed Chinese PREAS from HarmonyOS 2.0.0.140 — experimental with
-     2.0.0.150;
-   - modified unsigned `/china` PREAS — tested on STF-AL10.
+5. Use the modified unsigned `/china` PREAS tested on STF-AL10. The signed
+   option is unavailable in `v1.1.0`.
 6. Read the data-erasure warning.
 7. Enter this exact confirmation phrase:
 
@@ -184,12 +184,12 @@ The bootloader remains unlocked.
 
 | Variant | AVB | Status |
 |---|---|---|
-| Signed Chinese PREAS from official HarmonyOS 2.0.0.140 | `SHA256_RSA2048`, Huawei key | Experimental with the 2.0.0.150 system |
+| Signed Chinese PREAS | Huawei key required | Not published: official DLOAD has no PREAS and an exact C00 dump has not been found |
 | Modified minimal PREAS containing `/china` | `NONE` | Tested on STF-AL10 |
 
-The EXE downloads the separate signed image only when the first option is
-selected. Its signature only verifies PREAS with a Huawei key and **does not
-make bootloader relocking safe**.
+The EXE disables signed mode when no verified asset exists. See
+[`SIGNED-PREAS-STATUS.md`](SIGNED-PREAS-STATUS.md). A future signed image would
+still **not make bootloader relocking safe**.
 
 ## 9. First boot
 
@@ -209,8 +209,7 @@ After booting:
 - do not use a `dload` package from another model;
 - store the `backups` folder safely.
 
-The unsigned option uses AVB algorithm `NONE`; the signed option comes from
-release 2.0.0.140. Do not relock the bootloader with either option.
+The current PREAS uses AVB algorithm `NONE`. Do not relock the bootloader.
 
 ## 10. Backups
 
