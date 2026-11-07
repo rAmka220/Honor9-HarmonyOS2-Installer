@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Russian EXE guide
+    url: https://github.com/rAmka220/Honor9-HarmonyOS2-Installer/blob/main/EXE-GUIDE-RU.md
+    about: Read the complete installation and troubleshooting guide first.
+  - name: FBLOCK guide
+    url: https://github.com/rAmka220/Honor9-HarmonyOS2-Installer/blob/main/FBLOCK-GUIDE-RU.md
+    about: USERLOCK alone is not sufficient; FBLOCK must also be UNLOCKED.

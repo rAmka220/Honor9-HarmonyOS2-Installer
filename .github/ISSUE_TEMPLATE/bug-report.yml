@@ -1,0 +1,68 @@
+name: Installer bug report
+description: Report a reproducible downloader, check, or flashing failure
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do **not** attach `backups`, OEMINFO, NVME, modemnvm, persist, secure storage, IMEI, serial numbers, or unlock codes. Review logs before uploading.
+  - type: checkboxes
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I did not relock the bootloader.
+          required: true
+        - label: I will not upload device-unique backup partitions.
+          required: true
+  - type: dropdown
+    attributes:
+      label: Honor 9 model
+      options:
+        - STF-AL10
+        - STF-AL00
+        - STF-TL10
+        - STF-L09
+        - STF-L19
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Original firmware/build
+      placeholder: "Example: STF-L09 9.1.0.210(C432...)"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: USERLOCK / FBLOCK
+      placeholder: "USER: UNLOCKED, FB: UNLOCKED"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Failed stage
+      options:
+        - GitHub download
+        - SHA-256 verification
+        - Payload extraction
+        - Phone check
+        - Fastboot transition
+        - TWRP transition
+        - Backup
+        - OEMINFO patch
+        - Partition flashing
+        - Userdata setup
+        - First boot
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Exact error and reproduction steps
+      description: Copy the exact message and explain what happened immediately before it.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sanitized log excerpt
+      description: Remove computer username and phone serial. Do not paste partition images.
+      render: text
